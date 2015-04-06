@@ -13,8 +13,6 @@ P2S_ADD = "ADD"
 P2S_LOOKUP = "LOOKUP"
 P2S_LIST = "LIST ALL"
 
-P2S_METHODS = {P2S_ADD, P2S_LOOKUP, P2S_LIST}
-
 # Encoding
 ENCODING = "utf-8"
 
@@ -29,15 +27,26 @@ CARRIAGE_RETURN = "\r"
 LINE_FEED = "\n"
 SPACE = " "
 
-# RFC tag literal
+# Header Tag literals
 RFC_TAG = "RFC"
 HOST_TAG = "Host:"
 OS_TAG = "OS:"
 PORT_TAG = "Port:"
 TITLE_TAG = "Title:"
+DATE_TAG = "Date:"
+LAST_MOD_TAG = "Last-Modified:"
+CONTENT_LENGTH_TAG = "Content-Length:"
+CONTENT_TYPE_TAG = "Content-Type:"
 
 # Status codes
 STATUS_OK = (200, "OK")
 STATUS_BAD_REQUEST = (400, "Bad Request")
 STATUS_NOT_FOUND = (404, "Not Found")
 STATUS_VERSION_NOT_SUP = (505, "P2P-CI Version Not Supported")
+
+# Random Data for Tests
+LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et " \
+              "dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip" \
+              " ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore " \
+              "eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia " \
+              "deserunt mollit anim id est laborum."
