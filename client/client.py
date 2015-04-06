@@ -1,14 +1,13 @@
 __author__ = 'rg.kavodkar'
 import socket
+import util.constants as constants
 
 host = socket.gethostname()
-port = 12345
 
 
-for i in range(100):
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.bind(('0.0.0.0', 12600))
-    client_socket.connect((host, port))
-    message = client_socket.recv(1024)
-    print("Received message:", message)
-    client_socket.close()
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((host, constants.SERVER_PORT))
+client_socket.send("Hello World!".encode(constants.ENCODING))
+message = client_socket.recv(constants.MAX_BUFFER_SIZE)
+print("Server message:", str(message, constants.ENCODING))
+client_socket.close()
