@@ -1,3 +1,5 @@
 /.idea
 *.pyc
 git-commands.txt
+server.log
+client.log
