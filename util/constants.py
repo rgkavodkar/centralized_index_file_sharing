@@ -44,6 +44,14 @@ STATUS_BAD_REQUEST = (400, "Bad Request")
 STATUS_NOT_FOUND = (404, "Not Found")
 STATUS_VERSION_NOT_SUP = (505, "P2P-CI Version Not Supported")
 
+# Logging constants
+LOGGING_FORMAT = "[%(levelname)s] %(asctime)s [%(module)s.%(funcName)s] %(message)s"
+SERVER_LOG_FILE = "server.log"
+CLIENT_LOG_FILE = "client.log"
+
+# Command Strings
+CMD_EXIT = "exit"
+
 # Random Data for Tests
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et " \
               "dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip" \
