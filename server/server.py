@@ -37,11 +37,11 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
             # Performing strip after above check to avoid "" as a potential socket terminator
             client_request = client_request.strip()
-            logger.info("Request from client: " + client_request)
+            logger.info("Request from client:\n" + client_request)
 
             # Response for client
             response = client_request.upper()
-            logger.info("Response to client: " + response)
+            logger.info("Response to client:\n" + response)
             self.request.send(bytes(response, "utf-8"))
 
         logger.info("Client Disconnected: " + client_host)

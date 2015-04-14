@@ -46,11 +46,19 @@ STATUS_VERSION_NOT_SUP = (505, "P2P-CI Version Not Supported")
 
 # Logging constants
 LOGGING_FORMAT = "[%(levelname)s] %(asctime)s [%(module)s.%(funcName)s] %(message)s"
+LOGGING_FORMAT_CLIENT_CONSOLE = "%(message)s"
 SERVER_LOG_FILE = "server.log"
 CLIENT_LOG_FILE = "client.log"
 
 # Command Strings
 CMD_EXIT = "exit"
+CMD_ADD = "add"
+CMD_LIST = "list"
+CMD_LOOKUP = "lookup"
+CMD_GET = "get"
+CMD_HELP = "help"
+
+CMDS = {"exit", "add", "list", "lookup", "get", "help"}
 
 # Random Data for Tests
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et " \
