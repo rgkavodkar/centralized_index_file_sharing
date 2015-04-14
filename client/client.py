@@ -10,12 +10,12 @@ from util import construct_response as c_res
 # A function to print the valid command options
 def print_help():
     logger.info("  Available commands are:")
-    logger.info("  add {rfc_number} {title}             # Adds the new RFC info to the server's database")
-    logger.info("  lookup {rfc_number} {title}          # Request to get all the host information that has the given RFC")
-    logger.info("  list                                 # Request to print the whole index of RFCs from the server")
-    logger.info("  help                                 # Prints the available command options")
-    logger.info("  get {rfc_number} {peer_ip}           # Request to get the RFC from the given host")
-    logger.info("  exit                                 # Disconnects the client from the server and exits")
+    logger.info("  add {rfc_number} {title          # Adds the new RFC info to the server's database")
+    logger.info("  lookup {rfc_number} {title}      # Request to get all the host information that has the given RFC")
+    logger.info("  list                             # Request to print the whole index of RFCs from the server")
+    logger.info("  help                             # Prints the available command options")
+    logger.info("  get {rfc_number} {peer_ip}       # Request to get the RFC from the given host")
+    logger.info("  exit                             # Disconnects the client from the server and exits")
 
 # TODO: Put the whole functionality into a function
 
