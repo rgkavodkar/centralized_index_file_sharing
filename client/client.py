@@ -7,10 +7,11 @@ from client import command_utils
 from util import constants
 from util import construct_response as c_res
 
+
 # A function to print the valid command options
 def print_help():
     logger.info("  Available commands are:")
-    logger.info("  add {rfc_number} {title          # Adds the new RFC info to the server's database")
+    logger.info("  add {rfc_number} {title}         # Adds the new RFC info to the server's database")
     logger.info("  lookup {rfc_number} {title}      # Request to get all the host information that has the given RFC")
     logger.info("  list                             # Request to print the whole index of RFCs from the server")
     logger.info("  help                             # Prints the available command options")
@@ -49,7 +50,7 @@ client_port = client_socket.getsockname()[1]
 # Keep alive connection
 while True:
     client_request = input("> ")
-    if client_request == constants.CMD_EXIT:
+    if client_request == constants.CLIENT_CMD_EXIT:
         # Received command for exit, closing the socket
         logger.info("Closing the client socket and the connection")
         client_socket.close()
@@ -60,7 +61,7 @@ while True:
     command = command_tokens[0]
 
     # if command is 'help'
-    if command == constants.CMD_HELP:
+    if command == constants.CLIENT_CMD_HELP:
         print_help()
         continue
 
@@ -75,31 +76,31 @@ while True:
             request_str = ""
 
             # ADD
-            if command == constants.CMD_ADD:
+            if command == constants.CLIENT_CMD_ADD:
                 # Get the add request string
                 request_str = command_utils.add_request(command_tokens, client_ip, client_upload_server_port)
                 logger.debug("Add request to server\n" + request_str)
 
             # GET
-            elif command == constants.CMD_GET:
+            elif command == constants.CLIENT_CMD_GET:
                 # Get the get request string
                 request_str = command_utils.get_request(command_tokens, client_os)
                 logger.debug("Get request to peer\n" + request_str)
 
             # LIST
-            elif command == constants.CMD_LIST:
+            elif command == constants.CLIENT_CMD_LIST:
                 # Get the list request string
                 request_str = command_utils.list_request(client_ip, client_port)
                 logger.debug("List request to server\n" + request_str)
 
             # LOOKUP
-            elif command == constants.CMD_LOOKUP:
+            elif command == constants.CLIENT_CMD_LOOKUP:
                 # Get the lookup request string
                 request_str = command_utils.lookup_request(command_tokens, client_ip, client_port)
                 logger.debug("Lookup request to server\n" + request_str)
 
             # For all command that are for the server, ie, P2S
-            if command != constants.CMD_GET:
+            if command != constants.CLIENT_CMD_GET:
                 # Send the server the command
                 client_socket.send(bytes(request_str, constants.ENCODING))
 

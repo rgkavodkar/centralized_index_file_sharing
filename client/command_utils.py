@@ -28,7 +28,9 @@ def get_rfc_title():
 def validate_ip(ip):
     try:
         socket.inet_aton(ip)
-        return True
+        if len(ip.split(".")) == 4:
+            return True
+        return False
     except socket.error:
         return False
 

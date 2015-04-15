@@ -2,8 +2,9 @@ __author__ = 'rg.kavodkar'
 
 import socket
 import socketserver
-import util.constants as constants
 import logging
+import util.constants as constants
+import util.parse_request as parse_req
 from server import server_logger_init
 
 # TODO: Make the whole thing like a function
@@ -28,19 +29,30 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
         while 1:
             # Receive the client request
-            client_request = str(self.request.recv(constants.MAX_BUFFER_SIZE), constants.ENCODING)
+            client_request_str = str(self.request.recv(constants.MAX_BUFFER_SIZE), constants.ENCODING)
 
             # If received null, break and close the socket
-            if not client_request:
+            if not client_request_str:
                 logger.warn("Closing the connection with " + client_host)
                 break
 
             # Performing strip after above check to avoid "" as a potential socket terminator
-            client_request = client_request.strip()
-            logger.info("Request from client:\n" + client_request)
+            client_request_str = client_request_str.strip()
+            logger.info("Request from client:\n" + client_request_str)
+
+            # Get the command from the request
+            request_command = client_request_str.split(constants.SPACE)[0]
+            request_params = ()
+
+            if request_command == constants.P2S_ADD:
+                request_params = parse_req.parse_p2s_add_request(client_request_str)
+            elif request_command == constants.P2S_LIST_STUB:
+                request_params = parse_req.parse_p2s_list_request(client_request_str)
+            elif request_command == constants.P2S_LOOKUP:
+                request_params = parse_req.parse_p2s_lookup_request(client_request_str)
 
             # Response for client
-            response = client_request.upper()
+            response = client_request_str.upper()
             logger.info("Response to client:\n" + response)
             self.request.send(bytes(response, "utf-8"))
 

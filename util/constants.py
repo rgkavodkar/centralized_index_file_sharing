@@ -12,6 +12,7 @@ P2P_GET = "GET"
 P2S_ADD = "ADD"
 P2S_LOOKUP = "LOOKUP"
 P2S_LIST = "LIST ALL"
+P2S_LIST_STUB = "LIST"
 
 # Encoding
 ENCODING = "utf-8"
@@ -38,6 +39,13 @@ LAST_MOD_TAG = "Last-Modified:"
 CONTENT_LENGTH_TAG = "Content-Length:"
 CONTENT_TYPE_TAG = "Content-Type:"
 
+# Dictionary object literals
+DICT_RFC_NUMBER = "rfc_number"
+DICT_TITLE = "title"
+DICT_IP = "host_ip"
+DICT_PORT = "host_port"
+DICT_OS = "os"
+
 # Status codes
 STATUS_OK = (200, "OK")
 STATUS_BAD_REQUEST = (400, "Bad Request")
@@ -51,12 +59,12 @@ SERVER_LOG_FILE = "server.log"
 CLIENT_LOG_FILE = "client.log"
 
 # Command Strings
-CMD_EXIT = "exit"
-CMD_ADD = "add"
-CMD_LIST = "list"
-CMD_LOOKUP = "lookup"
-CMD_GET = "get"
-CMD_HELP = "help"
+CLIENT_CMD_EXIT = "exit"
+CLIENT_CMD_ADD = "add"
+CLIENT_CMD_LIST = "list"
+CLIENT_CMD_LOOKUP = "lookup"
+CLIENT_CMD_GET = "get"
+CLIENT_CMD_HELP = "help"
 
 CMDS = {"exit", "add", "list", "lookup", "get", "help"}
 
