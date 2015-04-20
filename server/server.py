@@ -143,7 +143,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 request_params = parse_req.parse_p2s_lookup_request(client_request_str)
                 rfc_list_subset = list()
                 # Get the corresponding rfcs
-                if request_params[constants.DICT_RFC_NUMBER] == 0:
+                if request_params[constants.DICT_RFC_NUMBER] == "0":
                     rfc_list_subset = search_rfc_by_title(request_params[constants.DICT_TITLE])
                 else:
                     rfc_list_subset = search_rfc_by_number(request_params[constants.DICT_RFC_NUMBER])
