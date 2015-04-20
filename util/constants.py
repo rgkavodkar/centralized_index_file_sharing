@@ -47,6 +47,9 @@ DICT_IP = "host_ip"
 DICT_PORT = "host_port"
 DICT_OS = "os"
 
+# Content-Type info
+CONTENT_TYPE_TEXTPLAIN = "text/plain"
+
 # Status codes
 STATUS_OK = ("200", "OK")
 STATUS_BAD_REQUEST = ("400", "Bad Request")
@@ -58,6 +61,8 @@ LOGGING_FORMAT = "[%(levelname)s] %(asctime)s [%(module)s.%(funcName)s] %(messag
 LOGGING_FORMAT_CLIENT_CONSOLE = "%(message)s"
 SERVER_LOG_FILE = "server.log"
 CLIENT_LOG_FILE = "client.log"
+SERVER_LOG = "server_log"
+CLIENT_LOG = "client_log"
 
 # Command Strings
 CLIENT_CMD_EXIT = "exit"

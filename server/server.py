@@ -16,7 +16,7 @@ from multiprocessing import Lock
 server_logger_init.init()
 
 # Get the server logger object created in the logger init
-logger = logging.getLogger("server_log")
+logger = logging.getLogger(constants.SERVER_LOG)
 
 # Get the hostname of this machine
 host = socket.gethostname()

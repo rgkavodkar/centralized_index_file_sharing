@@ -5,7 +5,7 @@ import util.constants as constants
 # Initialize the logger for the server module
 def init():
     # Create the server logger
-    server_logger = logging.getLogger("server_log")
+    server_logger = logging.getLogger(constants.SERVER_LOG)
     server_logger.setLevel(logging.DEBUG)
 
     # Create a common formatter

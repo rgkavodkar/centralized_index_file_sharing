@@ -1,11 +1,13 @@
 __author__ = 'rg.kavodkar'
 import socket
 import logging
-import platform
 import os
+import threading
 from client import client_logger_init
 from client import command_utils
+from client import upload_server
 from util import constants
+from util import utils
 from util import construct_response as c_res
 
 
@@ -18,20 +20,25 @@ def print_help():
     logger.info("  get {rfc_number} {peer_ip}       # Request to get the RFC from the given host")
     logger.info("  exit                             # Disconnects the client from the server and exits")
 
+
+# Get a random open port
+def get_open_port():
+    # A hacky way to get a random port number
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
 # Initialize the client logger
 client_logger_init.init()
 
 # Get the OS info
-client_os = platform.system() + " " + platform.release()
-
-# TODO: Randomize the port, rather get it from the thread
-# Client upload server port number
-client_upload_server_port = 43332
+client_os = utils.get_os_info()
 
 # Get the logger object
-logger = logging.getLogger("client_log")
+logger = logging.getLogger(constants.CLIENT_LOG)
 
-# TODO: Remove this
 # Get the client hostname
 client_hostname = socket.gethostbyname(socket.gethostname())
 
@@ -47,6 +54,16 @@ while not valid:
     valid = os.path.exists(rfc_location)
     if not valid:
         logger.info("Invalid file location. Please enter the correct path.")
+
+
+# Start the upload server
+client_upload_server_port = get_open_port()
+# TODO: Correction!!
+# # Call the upload server in a new thread
+# logger.info("Starting Upload Server thread")
+# upload_server_thread = threading.Thread(target=upload_server.init(client_hostname, client_upload_server_port, rfc_location), daemon="")
+# upload_server_thread.run()
+# logger.info("Started Upload Server thread")
 
 # Create a client TCP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,7 +87,7 @@ rfc_files = os.listdir(rfc_location)
 # Add each of the rfc info to the server
 for rfc in rfc_files:
     rfc_full_path = os.path.abspath(os.path.join(rfc_location, rfc))
-    request_str = command_utils.add_request(rfc_full_path, client_ip, client_upload_server_port)
+    request_str = command_utils.add_request(rfc_full_path, client_ip, client_port)
     client_socket.send(bytes(request_str, constants.ENCODING))
 
     message = client_socket.recv(constants.MAX_BUFFER_SIZE)
@@ -83,6 +100,7 @@ while True:
     if client_request == constants.CLIENT_CMD_EXIT:
         # Received command for exit, closing the socket
         logger.info("Closing the client socket and the connection")
+        upload_server_thread.join()
         client_socket.close()
         break
 
