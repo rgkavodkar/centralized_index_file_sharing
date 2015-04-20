@@ -26,10 +26,10 @@ def parse_p2s_add_request(request_str):
     logger.debug("Title: " + title)
 
     request_params = dict()
-    request_params[c.DICT_RFC_NUMBER] = rfc_number
-    request_params[c.DICT_IP] = host_ip
-    request_params[c.DICT_PORT] = host_port
-    request_params[c.DICT_TITLE] = title
+    request_params[c.DICT_RFC_NUMBER] = rfc_number.strip()
+    request_params[c.DICT_IP] = host_ip.strip()
+    request_params[c.DICT_PORT] = host_port.strip()
+    request_params[c.DICT_TITLE] = title.strip()
 
     return request_params
 

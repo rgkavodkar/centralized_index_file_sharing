@@ -8,6 +8,9 @@ class Rfc_info():
         self.__host_name = host_name
         self.__host_port = host_port
 
+    def __str__(self):
+        return self.__rfc_number + self.__rfc_title + self.__host_name + self.__host_port
+
     def get_rfc_number(self):
         return self.__rfc_number
 
@@ -19,3 +22,4 @@ class Rfc_info():
 
     def get_host_port(self):
         return self.__host_port
+

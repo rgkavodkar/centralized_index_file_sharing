@@ -2,6 +2,7 @@ __author__ = 'rg.kavodkar'
 import socket
 import logging
 import platform
+import os
 from client import client_logger_init
 from client import command_utils
 from util import constants
@@ -18,8 +19,6 @@ def print_help():
     logger.info("  get {rfc_number} {peer_ip}       # Request to get the RFC from the given host")
     logger.info("  exit                             # Disconnects the client from the server and exits")
 
-# TODO: Put the whole functionality into a function
-
 # Initialize the client logger
 client_logger_init.init()
 
@@ -33,8 +32,22 @@ client_upload_server_port = 43332
 # Get the logger object
 logger = logging.getLogger("client_log")
 
+# TODO: Remove this
 # Get the client hostname
 client_hostname = socket.gethostbyname(socket.gethostname())
+
+# TODO: Uncomment
+# Get the server hostname
+# server_ip = input("Enter the IP address of the server: ")
+
+# Get the location of the RFCs on the local machine
+rfc_location = ""
+valid = False
+while not valid:
+    rfc_location = input("Enter the location of the RFCs on the local machine: ")
+    valid = os.path.exists(rfc_location)
+    if not valid:
+        logger.info("Invalid file location. Please enter the correct path.")
 
 # Create a client TCP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,6 +59,24 @@ client_socket.connect((client_hostname, constants.SERVER_PORT))
 # Get the client socket ip and port
 client_ip = client_socket.getsockname()[0]
 client_port = client_socket.getsockname()[1]
+
+# Send the hello message to server
+hello_str = constants.P2S_HELLO + " " + client_ip + " " + str(client_upload_server_port)
+client_socket.send(bytes(hello_str, constants.ENCODING))
+message = client_socket.recv(constants.MAX_BUFFER_SIZE)
+
+# Get all the RFCs in the client and send ADD message to the server
+rfc_files = os.listdir(rfc_location)
+
+# Add each of the rfc info to the server
+for rfc in rfc_files:
+    rfc_full_path = os.path.abspath(os.path.join(rfc_location, rfc))
+    request_str = command_utils.add_request(rfc_full_path, client_ip, client_upload_server_port)
+    client_socket.send(bytes(request_str, constants.ENCODING))
+
+    message = client_socket.recv(constants.MAX_BUFFER_SIZE)
+    logger.info("Message from server:\n" + str(message, constants.ENCODING))
+# logger.debug("Add request to server\n" + request_str)
 
 # Keep alive connection
 while True:
@@ -75,14 +106,8 @@ while True:
         if command in constants.CMDS:
             request_str = ""
 
-            # ADD
-            if command == constants.CLIENT_CMD_ADD:
-                # Get the add request string
-                request_str = command_utils.add_request(command_tokens, client_ip, client_upload_server_port)
-                logger.debug("Add request to server\n" + request_str)
-
             # GET
-            elif command == constants.CLIENT_CMD_GET:
+            if command == constants.CLIENT_CMD_GET:
                 # Get the get request string
                 request_str = command_utils.get_request(command_tokens, client_os)
                 logger.debug("Get request to peer\n" + request_str)

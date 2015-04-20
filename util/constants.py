@@ -9,6 +9,7 @@ SERVER_PORT = 7734
 P2P_GET = "GET"
 
 # Constants for the P2S methods
+P2S_HELLO = "HELLO"
 P2S_ADD = "ADD"
 P2S_LOOKUP = "LOOKUP"
 P2S_LIST = "LIST ALL"

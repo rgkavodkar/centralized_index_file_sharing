@@ -5,7 +5,9 @@ import socketserver
 import logging
 import util.constants as constants
 import util.parse_request as parse_req
+import util.rfc_info as rfc_object
 from server import server_logger_init
+from multiprocessing import Lock
 
 # TODO: Make the whole thing like a function
 
@@ -18,12 +20,69 @@ logger = logging.getLogger("server_log")
 # Get the hostname of this machine
 host = socket.gethostname()
 
+# Dictionary for holding host's upload server ip and its port
+client_info = dict()
+
+# List of rfc to client info
+rfc_list = list()
+
+
+# Add a new client info
+def add_client(client_ip, client_port):
+    client_info[client_ip] = client_port
+    logger.info("Added new client: %s:%s" % (client_ip, client_port))
+
+
+# Called when an add request is received
+def update_on_add(update_params):
+
+    # Extract required info from the dictionary
+    rfc_number = update_params[constants.DICT_RFC_NUMBER]
+    rfc_title = update_params[constants.DICT_TITLE]
+    host_name = update_params[constants.DICT_IP]
+    host_port = update_params[constants.DICT_PORT]
+
+    # Get a locking object and acquire it
+    lock = Lock()
+    lock.acquire()
+
+    try:
+        # Update the rfc_list
+        rfc_obj = rfc_object.Rfc_info(rfc_number, rfc_title, host_name, host_port)
+        rfc_list.append(rfc_obj)
+        logger.debug("Added RFC object to list %r" % rfc_obj)
+    except:
+        logger.error("Failure while updating the rfc info")
+    finally:
+        lock.release()
+
+
+# Called when a host disconnects
+def remove_on_disconnect(client_ip):
+    global rfc_list
+
+    # Get a locking object and acquire it
+    lock = Lock()
+    lock.acquire()
+
+    try:
+        # Keep only those that do not have the hostname parameter as the current client_ip
+        rfc_list[:] = [rfc for rfc in rfc_list if not rfc.get_host_name() == client_ip]
+
+        # Remove the client from the client_info dictionary
+        client_info.pop(client_ip, None)
+        logger.info("Removed items pertaining to client %s" % client_ip)
+    except:
+        logger.error("Failure while removing %s's info" % client_ip)
+    finally:
+        lock.release()
+
 
 # A handler class whose instance is created for each client that connects
 class RequestHandler(socketserver.BaseRequestHandler):
     # Overriding the method
     def handle(self):
-        client_host = self.client_address[0]
+        client_host = self.client_address[0].strip()
         client_port = self.client_address[1]
         logger.info("Client Connected: " + client_host)
 
@@ -42,21 +101,36 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
             # Get the command from the request
             request_command = client_request_str.split(constants.SPACE)[0]
-            request_params = ()
+            request_params = dict()
 
-            if request_command == constants.P2S_ADD:
+            response = ""
+
+            if request_command == constants.P2S_HELLO:
+                logger.info("Received hello string %s " % client_request_str)
+                client_ip = client_request_str.split(" ")[1]
+                client_upload_server_port = client_request_str.split(" ")[2]
+                add_client(client_ip, client_upload_server_port)
+                response = "SUCCESS"
+            elif request_command == constants.P2S_ADD:
                 request_params = parse_req.parse_p2s_add_request(client_request_str)
+                update_on_add(request_params)
+                response = client_request_str.upper()
             elif request_command == constants.P2S_LIST_STUB:
                 request_params = parse_req.parse_p2s_list_request(client_request_str)
+                response = client_request_str.upper()
             elif request_command == constants.P2S_LOOKUP:
                 request_params = parse_req.parse_p2s_lookup_request(client_request_str)
+                response = client_request_str.upper()
 
             # Response for client
-            response = client_request_str.upper()
             logger.info("Response to client:\n" + response)
-            self.request.send(bytes(response, "utf-8"))
+            self.request.send(bytes(response, constants.ENCODING))
 
+        # Remove all info related to this host
+        remove_on_disconnect(client_host)
         logger.info("Client Disconnected: " + client_host)
+        logger.debug("Current client_info: " + str(client_info))
+        logger.debug("Current rfc_list length: " + str(len(rfc_list)))
 
 
 # An instance of the ThreadedTCPServer class that handles the threading for each client

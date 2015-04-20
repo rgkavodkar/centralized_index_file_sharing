@@ -48,8 +48,13 @@ def get_peer_ip():
     return peer_ip
 
 
-# Get the add request params
-def get_add_lookup_params(command_tokens):
+# Get the ADD request params from file location
+def get_add_params(file_location):
+    return "1123", "hello world"
+
+
+# Get the lookup request params
+def get_lookup_params(command_tokens):
     rfc_number = 0
     title = ""
 
@@ -113,9 +118,10 @@ def get_get_params(command_tokens):
 
 
 # Get add requests
-def add_request(command_tokens, client_ip, client_upload_server_port):
+def add_request(file_location, client_ip, client_upload_server_port):
     # Check if the other required information is present
-    rfc_number, title = get_add_lookup_params(command_tokens)
+    rfc_number, title = get_add_params(file_location)
+
     logger.debug("Add request params: RFC number: " + str(rfc_number) + ", Title: " + title)
 
     return c_req.construct_p2s_add_request(str(rfc_number), client_ip, str(client_upload_server_port), title)
@@ -138,7 +144,7 @@ def list_request(client_ip, client_port):
 # Get lookup requests
 def lookup_request(command_tokens, client_ip, client_port):
     # Get the lookup request params
-    rfc_number, title = get_add_lookup_params(command_tokens)
+    rfc_number, title = get_lookup_params(command_tokens)
     logger.debug("Lookup request params: RFC number: " + str(rfc_number) + ", Title: " + title)
 
     return c_req.construct_p2s_lookup_request(str(rfc_number), client_ip, str(client_port), title)
