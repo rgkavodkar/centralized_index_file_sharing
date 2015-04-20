@@ -48,10 +48,10 @@ DICT_PORT = "host_port"
 DICT_OS = "os"
 
 # Status codes
-STATUS_OK = (200, "OK")
-STATUS_BAD_REQUEST = (400, "Bad Request")
-STATUS_NOT_FOUND = (404, "Not Found")
-STATUS_VERSION_NOT_SUP = (505, "P2P-CI Version Not Supported")
+STATUS_OK = ("200", "OK")
+STATUS_BAD_REQUEST = ("400", "Bad Request")
+STATUS_NOT_FOUND = ("404", "Not Found")
+STATUS_VERSION_NOT_SUP = ("505", "P2P-CI Version Not Supported")
 
 # Logging constants
 LOGGING_FORMAT = "[%(levelname)s] %(asctime)s [%(module)s.%(funcName)s] %(message)s"

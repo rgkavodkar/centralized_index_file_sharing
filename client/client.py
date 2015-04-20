@@ -12,7 +12,6 @@ from util import construct_response as c_res
 # A function to print the valid command options
 def print_help():
     logger.info("  Available commands are:")
-    logger.info("  add {rfc_number} {title}         # Adds the new RFC info to the server's database")
     logger.info("  lookup {rfc_number} {title}      # Request to get all the host information that has the given RFC")
     logger.info("  list                             # Request to print the whole index of RFCs from the server")
     logger.info("  help                             # Prints the available command options")
@@ -109,7 +108,7 @@ while True:
             # GET
             if command == constants.CLIENT_CMD_GET:
                 # Get the get request string
-                request_str = command_utils.get_request(command_tokens, client_os)
+                request_str = command_utils.get_request(client_os)
                 logger.debug("Get request to peer\n" + request_str)
 
             # LIST
@@ -121,7 +120,7 @@ while True:
             # LOOKUP
             elif command == constants.CLIENT_CMD_LOOKUP:
                 # Get the lookup request string
-                request_str = command_utils.lookup_request(command_tokens, client_ip, client_port)
+                request_str = command_utils.lookup_request(client_ip, client_port)
                 logger.debug("Lookup request to server\n" + request_str)
 
             # For all command that are for the server, ie, P2S
