@@ -6,7 +6,22 @@ logger = logging.getLogger("server_log")
 
 # Parses the GET request
 def parse_p2p_get_request(request_str):
-    pass
+    # Get individual lines
+    lines = request_str.split(c.LINE_FEED)
+
+    # Extract the values from the respective lines
+    rfc_number = lines[0].split(c.SPACE)[2]
+    host_ip = lines[1].split(c.SPACE)[1]
+
+    logger.debug("Parse ADD request")
+    logger.debug("RFC Number: " + rfc_number)
+    logger.debug("Host IP: " + host_ip)
+
+    request_params = dict()
+    request_params[c.DICT_RFC_NUMBER] = rfc_number.strip()
+    request_params[c.DICT_IP] = host_ip.strip()
+
+    return request_params
 
 
 # Parses the ADD request

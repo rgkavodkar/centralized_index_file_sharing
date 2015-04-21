@@ -103,7 +103,7 @@ def get_add_params(file_location):
             if empty_block_count == 2:
                 rfc_title += " " + line.strip()
 
-    return rfc_number.strip(), rfc_title.strip()
+    return str(rfc_number).strip(), rfc_title.strip()
 
 
 # Get add requests
@@ -125,7 +125,7 @@ def get_request(client_os):
 
     logger.debug("Get request: RFC number: " + str(rfc_number))
 
-    return c_req.construct_p2p_get_request(str(rfc_number), peer_ip, client_os), peer_ip, peer_port
+    return c_req.construct_p2p_get_request(str(rfc_number), peer_ip, client_os), peer_ip, peer_port, rfc_number
 
 
 # Get list requests

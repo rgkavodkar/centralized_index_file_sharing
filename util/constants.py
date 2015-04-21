@@ -19,7 +19,7 @@ P2S_LIST_STUB = "LIST"
 ENCODING = "utf-8"
 
 # Max Buffer Size
-MAX_BUFFER_SIZE = 4096
+MAX_BUFFER_SIZE = 65535
 
 # Version String
 VERSION = "P2P-CI/1.0"
@@ -46,6 +46,12 @@ DICT_TITLE = "title"
 DICT_IP = "host_ip"
 DICT_PORT = "host_port"
 DICT_OS = "os"
+DICT_STATUS = "status"
+DICT_LAST_MODIFIED = "last_modified"
+DICT_CONTENT_LENGTH = "content_length"
+DICT_CONTENT_TYPE = "content_type"
+DICT_DATE = "date"
+DICT_RFC_DATA = "rfc_data"
 
 # Content-Type info
 CONTENT_TYPE_TEXTPLAIN = "text/plain"

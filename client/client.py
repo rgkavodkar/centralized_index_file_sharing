@@ -8,7 +8,7 @@ from client import command_utils
 from client import upload_server
 from util import constants
 from util import utils
-from util import construct_response as c_res
+from util import parse_response as p_res
 
 
 # A function to print the valid command options
@@ -79,7 +79,7 @@ client_port = client_socket.getsockname()[1]
 # Send the hello message to server
 hello_str = constants.P2S_HELLO + " " + client_ip + " " + str(client_upload_server_port)
 client_socket.send(bytes(hello_str, constants.ENCODING))
-message = client_socket.recv(constants.MAX_BUFFER_SIZE)
+response_str = client_socket.recv(constants.MAX_BUFFER_SIZE)
 
 # Get all the RFCs in the client and send ADD message to the server
 rfc_files = os.listdir(rfc_location)
@@ -90,8 +90,8 @@ for rfc in rfc_files:
     request_str = command_utils.add_request(rfc_full_path, client_ip, client_upload_server_port)
     client_socket.send(bytes(request_str, constants.ENCODING))
 
-    message = client_socket.recv(constants.MAX_BUFFER_SIZE)
-    logger.info("Message from server:\n" + str(message, constants.ENCODING))
+    response_str = client_socket.recv(constants.MAX_BUFFER_SIZE)
+    logger.info("Message from server:\n" + str(response_str, constants.ENCODING))
 # logger.debug("Add request to server\n" + request_str)
 
 # Keep alive connection
@@ -99,10 +99,13 @@ while True:
     client_request = input("> ")
     if client_request == constants.CLIENT_CMD_EXIT:
         # Received command for exit, closing the socket
-        logger.info("Closing the client socket and the connection")
+        logger.info("Attempting to close the Upload Server")
         upload_server.shutdown_server()
-        # upload_server_thread.join()
+        logger.info("Closed the Upload Server")
+        upload_server_thread.join()
+        logger.info("Disconnecting from the Server")
         client_socket.close()
+        logger.info("Disconnected from the Server")
         break
 
     # Get the command tokens
@@ -127,20 +130,40 @@ while True:
             # GET
             if command == constants.CLIENT_CMD_GET:
                 # Get the get request string
-                request_str, peer_ip, peer_port = command_utils.get_request(client_os)
-                logger.debug("Get request to peer\n" + request_str)
+                request_str, peer_ip, peer_port, rfc_number = command_utils.get_request(client_os)
+                logger.info("Get request to peer\n" + request_str)
 
                 peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-                # Connect to the server at the given address
-                peer_socket.connect((peer_ip, peer_port))
+                try:
+                    # Connect to the server at the given address
+                    peer_socket.connect((peer_ip, peer_port))
 
-                # Send the GET message to the peer
-                peer_socket.send(bytes(request_str, constants.ENCODING))
+                    # Send the GET message to the peer
+                    peer_socket.send(bytes(request_str, constants.ENCODING))
 
-                # Receive the server data
-                message = peer_socket.recv(constants.MAX_BUFFER_SIZE)
-                logger.info("Message from server:\n" + str(message, constants.ENCODING))
+                    # Receive the server data
+                    response_str = peer_socket.recv(constants.MAX_BUFFER_SIZE)
+                    response_str = str(response_str, constants.ENCODING)
+
+                    # Response parameters
+                    response = p_res.parse_p2p_get_response(response_str)
+
+                    # Get the RFC data and write to file
+                    rfc_data = response[constants.DICT_RFC_DATA]
+
+                    # Construct the new filename for the RFC
+                    new_rfc_file_name = utils.get_rfc_filename(rfc_number)
+                    logger.info("1")
+                    abs_rfc_file_name = os.path.abspath(os.path.join(rfc_location, new_rfc_file_name))
+                    logger.info("2")
+
+                    # Write the RFC file
+                    utils.write_file(abs_rfc_file_name, rfc_data)
+
+                    logger.info("Message from server:\n" + response_str)
+                except OSError:
+                    logger.error("Error: Host %r:%e unreachable" % (peer_ip, peer_port))
 
             # LIST
             elif command == constants.CLIENT_CMD_LIST:
@@ -160,8 +183,8 @@ while True:
                 client_socket.send(bytes(request_str, constants.ENCODING))
 
                 # Receive the message from server
-                message = client_socket.recv(constants.MAX_BUFFER_SIZE)
-                logger.info("Message from server:\n" + str(message, constants.ENCODING))
+                response_str = client_socket.recv(constants.MAX_BUFFER_SIZE)
+                logger.info("Message from server:\n" + str(response_str, constants.ENCODING))
 
         # For any other 'invalid' commands
         else:

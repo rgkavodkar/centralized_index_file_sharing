@@ -24,18 +24,22 @@ def shutdown_server():
 def read_rfc_data(rfc_number):
     print("READ RFC %s" % rfc_number)
 
-    rfc_filename = utils.get_rfc_filename(rfc_number)
-    rfc_filename = os.path.abspath(os.path.join(rfc_location, rfc_filename))
+    try:
+        rfc_filename = utils.get_rfc_filename(rfc_number)
+        rfc_filename = os.path.abspath(os.path.join(rfc_location, rfc_filename))
 
-    # Get the RFC file stat
-    file_stats = os.stat(rfc_filename)
-    last_modified = file_stats.st_mtime
-    content_length = file_stats.st_size
+        # Get the RFC file stat
+        file_stats = os.stat(rfc_filename)
+        last_modified = file_stats.st_mtime
+        content_length = file_stats.st_size
 
-    # Read the file contents
-    rfc_data = utils.read_file(rfc_filename)
+        # Read the file contents
+        rfc_data = utils.read_file(rfc_filename)
+    except IOError:
+        logger.error("The entered RFC was not found")
+        return "", "", ""
 
-    return rfc_data, last_modified, content_length
+    return rfc_data, str(last_modified), str(content_length)
 
 
 def init(host, port, rfc_loc):
@@ -59,8 +63,9 @@ class RequestHandler(socketserver.BaseRequestHandler):
         # Get the connecting host info
         client_host = self.client_address[0].strip()
 
-        while 1:
-            logger.info("Listening")
+        served = False
+
+        while not served:
             # Read the request
             request_str = str(self.request.recv(constants.MAX_BUFFER_SIZE), constants.ENCODING).strip()
             response = ""
@@ -84,8 +89,11 @@ class RequestHandler(socketserver.BaseRequestHandler):
                     response = c_res.construct_p2p_get_response(constants.STATUS_OK[0], constants.STATUS_OK[1],
                                                                 utils.get_date(), utils.get_os_info(), last_modified,
                                                                 content_len, constants.CONTENT_TYPE_TEXTPLAIN, rfc_data)
+                # Set the flag as server since the RFC data is sent
+                served = True
 
             self.request.send(bytes(response, constants.ENCODING))
+        logger.info("Terminating the connection with the client")
 
 
 # An instance of the ThreadedTCPServer class that handles the threading for each client
