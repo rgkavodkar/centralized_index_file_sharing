@@ -22,7 +22,6 @@ def shutdown_server():
 
 # Read RFC data from the file system
 def read_rfc_data(rfc_number):
-    print("READ RFC %s" % rfc_number)
 
     try:
         rfc_filename = utils.get_rfc_filename(rfc_number)
@@ -50,7 +49,7 @@ def init(host, port, rfc_loc):
 
     # Create an instance of ThreadedUploadServer
     server = ThreadedUploadServer((host, port), RequestHandler)
-    logger.info("Starting Upload server at %r:%r" % (host, port))
+    logger.info("Starting Upload server at %s:%r" % (host, port))
     server.serve_forever()
     logger.info("Shutting down Upload server")
 
@@ -78,7 +77,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 request_params = parse_request.parse_p2p_get_request(request_str)
                 rfc_number = request_params[constants.DICT_RFC_NUMBER]
                 rfc_data, last_modified, content_len = read_rfc_data(rfc_number)
-                logger.info("Server GET RFC %s request for %s" % (rfc_number, client_host))
+                logger.debug("Server GET RFC %s request for %s" % (rfc_number, client_host))
 
                 # Construct the response
                 if rfc_data == "":
@@ -93,7 +92,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 served = True
 
             self.request.send(bytes(response, constants.ENCODING))
-        logger.info("Terminating the connection with the client")
+        logger.debug("Terminating the connection with the client %r" % self.client_address[0].strip())
 
 
 # An instance of the ThreadedTCPServer class that handles the threading for each client

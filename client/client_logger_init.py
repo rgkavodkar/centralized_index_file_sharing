@@ -26,4 +26,4 @@ def init():
     client_logger.addHandler(file_handler)
     client_logger.addHandler(console_handler)
 
-    client_logger.info("Client logger initialized")
+    client_logger.debug("Client logger initialized")

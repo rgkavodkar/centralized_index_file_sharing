@@ -21,6 +21,9 @@ ENCODING = "utf-8"
 # Max Buffer Size
 MAX_BUFFER_SIZE = 65535
 
+# String similarity threshold
+SIMILARITY_THRESHOLD = 0.5
+
 # Version String
 VERSION = "P2P-CI/1.0"
 
