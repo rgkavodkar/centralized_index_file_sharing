@@ -96,7 +96,6 @@ def get_add_params(file_location):
             empty_block = False
             # If it is first text chunk, and it contains "Request for Comments:", extract the rfc_number
             if "Request for Comments:" in line and empty_block_count == 1:
-                print("RFC LINE")
                 rfc_number = line.split(" ")[3]
 
             # The second block is exclusively the title. Extract it.

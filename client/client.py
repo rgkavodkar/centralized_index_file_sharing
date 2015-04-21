@@ -44,7 +44,8 @@ client_hostname = socket.gethostbyname(socket.gethostname())
 
 # TODO: Uncomment
 # Get the server hostname
-# server_ip = input("Enter the IP address of the server: ")
+server_ip = ""
+server_ip = command_utils.get_peer_ip()
 
 # Get the location of the RFCs on the local machine
 rfc_location = ""
@@ -68,9 +69,8 @@ logger.info("Started Upload Server thread")
 # Create a client TCP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# TODO: Assuming that the server is running on the same machine, needs to be changed
 # Connect to the server at the given address
-client_socket.connect((client_hostname, constants.SERVER_PORT))
+client_socket.connect((server_ip, constants.SERVER_PORT))
 
 # Get the client socket ip and port
 client_ip = client_socket.getsockname()[0]
@@ -160,8 +160,14 @@ while True:
 
                     # Write the RFC file
                     utils.write_file(abs_rfc_file_name, rfc_data)
-
                     logger.info("Message from server:\n" + response_str)
+
+                    request_str = command_utils.add_request(abs_rfc_file_name, client_ip, client_upload_server_port)
+                    client_socket.send(bytes(request_str, constants.ENCODING))
+
+                    response_str = client_socket.recv(constants.MAX_BUFFER_SIZE)
+                    logger.info("Message from server:\n" + str(response_str, constants.ENCODING))
+
                 except OSError:
                     logger.error("Error: Host %r:%e unreachable" % (peer_ip, peer_port))
 
