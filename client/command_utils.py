@@ -38,11 +38,25 @@ def validate_ip(ip):
 
 
 # Get the peer ip
+def get_peer_port():
+    peer_port = ""
+    valid = False
+    while not valid:
+        try:
+            peer_port = int(input("Enter the server port number: "))
+            valid = True
+        except ValueError:
+            logger.error("Error: Please enter an integer for Port number")
+
+    return peer_port
+
+
+# Get the peer ip
 def get_peer_ip():
     peer_ip = ""
     valid = False
     while not valid:
-        peer_ip = input("Enter the IP of the peer: ")
+        peer_ip = input("Enter the server IP address: ")
         valid = validate_ip(peer_ip)
         if not valid:
             logger.error("Error: Please enter a valid IP address")
@@ -107,10 +121,11 @@ def get_request(client_os):
     # Get the rfc_number and the peer_ip
     rfc_number = get_rfc_number()
     peer_ip = get_peer_ip()
+    peer_port = get_peer_port()
 
     logger.debug("Get request: RFC number: " + str(rfc_number))
 
-    return c_req.construct_p2p_get_request(str(rfc_number), peer_ip, client_os)
+    return c_req.construct_p2p_get_request(str(rfc_number), peer_ip, client_os), peer_ip, peer_port
 
 
 # Get list requests

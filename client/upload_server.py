@@ -46,7 +46,7 @@ def init(host, port, rfc_loc):
 
     # Create an instance of ThreadedUploadServer
     server = ThreadedUploadServer((host, port), RequestHandler)
-    logger.info("Starting Upload server")
+    logger.info("Starting Upload server at %r:%r" % (host, port))
     server.serve_forever()
     logger.info("Shutting down Upload server")
 
@@ -60,7 +60,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
         client_host = self.client_address[0].strip()
 
         while 1:
-            logger.info("Listeing")
+            logger.info("Listening")
             # Read the request
             request_str = str(self.request.recv(constants.MAX_BUFFER_SIZE), constants.ENCODING).strip()
             response = ""

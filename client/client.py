@@ -58,12 +58,12 @@ while not valid:
 
 # Start the upload server
 client_upload_server_port = get_open_port()
-# TODO: Correction!!
-# # Call the upload server in a new thread
-# logger.info("Starting Upload Server thread")
-# upload_server_thread = threading.Thread(target=upload_server.init(client_hostname, client_upload_server_port, rfc_location), daemon="")
-# upload_server_thread.run()
-# logger.info("Started Upload Server thread")
+logger.info("Available Free port: %r" % client_upload_server_port)
+# Call the upload server in a new thread
+logger.info("Starting Upload Server thread")
+upload_server_thread = threading.Thread(target=upload_server.init, args=(client_hostname, client_upload_server_port, rfc_location, ))
+upload_server_thread.start()
+logger.info("Started Upload Server thread")
 
 # Create a client TCP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -87,7 +87,7 @@ rfc_files = os.listdir(rfc_location)
 # Add each of the rfc info to the server
 for rfc in rfc_files:
     rfc_full_path = os.path.abspath(os.path.join(rfc_location, rfc))
-    request_str = command_utils.add_request(rfc_full_path, client_ip, client_port)
+    request_str = command_utils.add_request(rfc_full_path, client_ip, client_upload_server_port)
     client_socket.send(bytes(request_str, constants.ENCODING))
 
     message = client_socket.recv(constants.MAX_BUFFER_SIZE)
@@ -100,7 +100,8 @@ while True:
     if client_request == constants.CLIENT_CMD_EXIT:
         # Received command for exit, closing the socket
         logger.info("Closing the client socket and the connection")
-        upload_server_thread.join()
+        upload_server.shutdown_server()
+        # upload_server_thread.join()
         client_socket.close()
         break
 
@@ -126,8 +127,20 @@ while True:
             # GET
             if command == constants.CLIENT_CMD_GET:
                 # Get the get request string
-                request_str = command_utils.get_request(client_os)
+                request_str, peer_ip, peer_port = command_utils.get_request(client_os)
                 logger.debug("Get request to peer\n" + request_str)
+
+                peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+                # Connect to the server at the given address
+                peer_socket.connect((peer_ip, peer_port))
+
+                # Send the GET message to the peer
+                peer_socket.send(bytes(request_str, constants.ENCODING))
+
+                # Receive the server data
+                message = peer_socket.recv(constants.MAX_BUFFER_SIZE)
+                logger.info("Message from server:\n" + str(message, constants.ENCODING))
 
             # LIST
             elif command == constants.CLIENT_CMD_LIST:
@@ -150,10 +163,6 @@ while True:
                 message = client_socket.recv(constants.MAX_BUFFER_SIZE)
                 logger.info("Message from server:\n" + str(message, constants.ENCODING))
 
-            # For GET, ie, P2P
-            else:
-                # TODO: implement the upload server
-                logger.info("P2P not implemented yet")
         # For any other 'invalid' commands
         else:
             logger.info("Invalid command. Type 'help' for command options")

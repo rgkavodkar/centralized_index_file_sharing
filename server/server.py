@@ -172,5 +172,5 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 # Create an instance of ThreadedTCPServer
 server = ThreadedTCPServer((host, constants.SERVER_PORT), RequestHandler)
-logger.info("Starting main server")
+logger.info("Starting main server at %r:%r" % (host, constants.SERVER_PORT))
 server.serve_forever()
