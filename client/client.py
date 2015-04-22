@@ -99,7 +99,6 @@ while True:
     client_request = input("> ")
     if client_request == constants.CLIENT_CMD_EXIT:
         # Received command for exit, closing the socket
-        logger.info("Attempting to close the Upload Server")
         upload_server.shutdown_server()
         upload_server_thread.join()
         logger.info("Disconnecting from the Server")
@@ -209,4 +208,3 @@ while True:
             logger.debug("Invalid command. Type 'help' for command options")
 
 print("Good Bye!")
-logger.info("Good Bye!")

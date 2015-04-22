@@ -38,9 +38,13 @@ def string_similarity_compare(string_1, string_2, ratio):
     # Convert the two string into tokens and sort them and reconstruct a string
     tokens_1 = ''.join(e for e in string_1 if e.isalnum() or e == " ")
     tokens_1 = sorted(tokens_1.split(" "))
-    tokens_1 = " ".join(tokens_1)
+    tokens_1 = [x.lower() for x in tokens_1]
+
     tokens_2 = ''.join(e for e in string_2 if e.isalnum() or e == " ")
     tokens_2 = sorted(tokens_2.split(" "))
+    tokens_2 = [x.lower() for x in tokens_2]
+
+    tokens_1 = " ".join(tokens_1)
     tokens_2 = " ".join(tokens_2)
 
     # Check the similarity between the two strings
