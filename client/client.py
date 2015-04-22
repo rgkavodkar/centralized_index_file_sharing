@@ -163,7 +163,6 @@ while True:
 
                     response_str = client_socket.recv(constants.MAX_BUFFER_SIZE)
                     logger.debug("Message from server:\n" + str(response_str, constants.ENCODING))
-                    print("Message from server: %s" % response_str)
 
                 except OSError:
                     logger.error("Error: Host %r:%e unreachable" % (peer_ip, peer_port))
